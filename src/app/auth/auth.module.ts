@@ -9,6 +9,9 @@ import {MatButtonModule} from "@angular/material/button";
 import { StoreModule } from '@ngrx/store';
 import {AuthService} from "./auth.service";
 import { EffectsModule } from '@ngrx/effects';
+import * as fromAuth from './reducers';
+import { AuthEffects } from './auth.effects';
+
 
 @NgModule({
     imports: [
@@ -18,6 +21,13 @@ import { EffectsModule } from '@ngrx/effects';
         MatInputModule,
         MatButtonModule,
         RouterModule.forChild([{path: '', component: LoginComponent}]),
+        //ng g store app/auth/Auth --module auth.module.ts solo afecta al modulo especifo no al root
+        StoreModule.forFeature(
+          fromAuth.authFeatureKey, //automatica
+          fromAuth.authReducer,
+          { }),
+        EffectsModule.forFeature([AuthEffects]), //los effects estaran ligados a este modulo y
+                                               //su implementacion es similar a la de un servicio (inyectable)
 
     ],
     declarations: [LoginComponent],
@@ -28,7 +38,8 @@ export class AuthModule {
         return {
             ngModule: AuthModule,
             providers: [
-              AuthService
+              AuthService,
+
             ]
         }
     }

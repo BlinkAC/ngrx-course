@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {NgModule, isDevMode} from '@angular/core';
 
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -21,12 +21,18 @@ import {RouterState, StoreRouterConnectingModule} from '@ngrx/router-store';
 import {EffectsModule} from '@ngrx/effects';
 import {EntityDataModule} from '@ngrx/data';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import * as fromAppState from '../reducers';
+import { metaReducers } from '../reducers';
+import { authGuard } from './auth/auth.guard';
+//import { AuthGuard } from './auth/auth.guard';
 
 
 const routes: Routes = [
   {
     path: 'courses',
-    loadChildren: () => import('./courses/courses.module').then(m => m.CoursesModule)
+    //solo cuando se llegue a la url /courses se cargara el modulo - evitar cargar tanto codigo de
+    loadChildren: () => import('./courses/courses.module').then(m => m.CoursesModule),
+    canActivate: [authGuard]//cualquier path que empiece por courses estara protegido por el guard (puede ver o no x pantalla)
   },
   {
     path: '**',
@@ -39,7 +45,8 @@ const routes: Routes = [
 @NgModule({ declarations: [
         AppComponent
     ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
+    bootstrap: [AppComponent], imports: [
+        BrowserModule,
         BrowserAnimationsModule,
         RouterModule.forRoot(routes),
         MatMenuModule,
@@ -48,6 +55,10 @@ const routes: Routes = [
         MatProgressSpinnerModule,
         MatListModule,
         MatToolbarModule,
-        AuthModule.forRoot()], providers: [provideHttpClient(withInterceptorsFromDi())] })
+        AuthModule.forRoot(),
+        StoreModule.forRoot(fromAppState.reducers, {metaReducers}),
+        StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
+        EffectsModule.forRoot([])],//El arreglo vacio inicializa los servicios de ngrx effects y los agrega a la app
+        providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule {
 }
