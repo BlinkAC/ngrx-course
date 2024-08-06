@@ -3,6 +3,11 @@ export const USERS = {
     id: 1,
     email: 'test@angular-university.io',
     password: 'test'
+    //Hacer una prueba para un rol de usuario
+    //Agregar una nueva opcion en el menu que cuando el usuario este logeado y se tipo admin este:
+    // -pueda ver una opcion de gestions de usuarios y se guarde su rol
+    // -al acceder obtenga una lista de usuarios
+    // -Pueda editar sus valores
   }
 
 };
